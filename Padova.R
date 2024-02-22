@@ -250,7 +250,7 @@ min480_power <- min10_power %>%
 
 # change index name to Time for uniformity with 20-minutely, 30-minutely, 1-hourly data
 #min10_power <- min10_power %>%
- # rename(Time = PCTimeStamp)
+# rename(Time = PCTimeStamp)
 
 saveRDS(min10_power, file = "min10.rds")
 saveRDS(min20_power, file = "min20.rds")
@@ -272,7 +272,7 @@ min10_power <- readRDS(file = "min10.rds")
 min20_power <- readRDS(file = "min20.rds")
 min30_power <- readRDS(file = "min30.rds")
 min40_power <- readRDS(file = "min40.rds")
-min60_power <- readRDS(file = "hr1.rds")
+min60_power <- readRDS(file = "min60.rds")
 min80_power <- readRDS(file = "min80.rds")
 min120_power <- readRDS(file = "min120.rds")
 min160_power <- readRDS(file = "min160.rds")
@@ -380,7 +380,7 @@ ggpubr::ggarrange(plotabcdnoagg, plotabcdagg,
 fc10_benchmark <- NULL;
 
 # compute number of entries
-N_10 = nrow(min10_n %>% filter(Time < "2021-01-01"))/n_keys(min10_n %>% filter(Time < "2021-01-01"))
+N_10 = nrow(min10_n %>% filter(as.Date(Time) < "2021-01-01"))/n_keys(min10_n %>% filter(as.Date(Time) < "2021-01-01"))
 N_10_all = nrow(min10_n)/n_keys(min10_n)
 
 for (i in seq(N_10,N_10_all-48,48)) {
@@ -421,7 +421,7 @@ saveRDS(residuals, file = "fc10_benchmark_residuals.rds")
 fc20_benchmark <- NULL;
 
 # compute number of entries
-N_20 = nrow(min20_n %>% filter(Time < "2021-01-01"))/n_keys(min20_n %>% filter(Time < "2021-01-01"))
+N_20 = nrow(min20_n %>% filter(as.Date(Time) < "2021-01-01"))/n_keys(min20_n %>% filter(as.Date(Time) < "2021-01-01"))
 N_20_all = nrow(min20_n)/n_keys(min20_n)
 
 for (i in seq(N_20,N_20_all-24,24)) {
@@ -461,7 +461,7 @@ saveRDS(residuals, file = "fc20_benchmark_residuals.rds")
 fc30_benchmark <- NULL;
 
 # compute number of entries
-N_30 = nrow(min30_n %>% filter(Time < "2021-01-01"))/n_keys(min30_n %>% filter(Time < "2021-01-01"))
+N_30 = nrow(min30_n %>% filter(as.Date(Time) < "2021-01-01"))/n_keys(min30_n %>% filter(as.Date(Time) < "2021-01-01"))
 N_30_all = nrow(min30_n)/n_keys(min30_n)
 
 for (i in seq(N_30,N_30_all-16,16)) {
@@ -495,14 +495,12 @@ saveRDS(fitted, file = "fc30_benchmark_fitted.rds")
 saveRDS(residuals, file = "fc30_benchmark_residuals.rds")
 
 
-
-
 #### Benchmark models - 40 minutely ####
 # initialize our accuracy tibble
 fc40_benchmark <- NULL;
 
 # compute number of entries
-N_40 = nrow(min40_n %>% filter(Time < "2021-01-01"))/n_keys(min40_n %>% filter(Time < "2021-01-01"))
+N_40 = nrow(min40_n %>% filter(as.Date(Time) < "2021-01-01"))/n_keys(min40_n %>% filter(as.Date(Time) < "2021-01-01"))
 N_40_all = nrow(min40_n)/n_keys(min40_n)
 
 for (i in seq(N_40,N_40_all-12,12)) {
@@ -544,7 +542,7 @@ saveRDS(residuals, file = "fc40_benchmark_residuals.rds")
 fc60_benchmark <- NULL;
 
 # compute number of entries
-N_60 = nrow(min60_n %>% filter(Time < "2021-01-01"))/n_keys(min60_n %>% filter(Time < "2021-01-01"))
+N_60 = nrow(min60_n %>% filter(as.Date(Time) < "2021-01-01"))/n_keys(min60_n %>% filter(as.Date(Time) < "2021-01-01"))
 N_60_all = nrow(min60_n)/n_keys(min60_n)
 
 for (i in seq(N_60,N_60_all-8,8)) {
@@ -583,7 +581,7 @@ saveRDS(residuals, file = "fc60_benchmark_residuals.rds")
 fc80_benchmark <- NULL;
 
 # compute number of entries
-N_80 = nrow(min80_n %>% filter(Time < "2021-01-01"))/n_keys(min80_n %>% filter(Time < "2021-01-01"))
+N_80 = nrow(min80_n %>% filter(as.Date(Time) < "2021-01-01"))/n_keys(min80_n %>% filter(as.Date(Time) < "2021-01-01"))
 N_80_all = nrow(min80_n)/n_keys(min80_n)
 
 for (i in seq(N_80,N_80_all-6,6)) {
@@ -622,7 +620,7 @@ saveRDS(residuals, file = "fc80_benchmark_residuals.rds")
 fc120_benchmark <- NULL;
 
 # compute number of entries
-N_120 = nrow(min120_n %>% filter(Time < "2021-01-01"))/n_keys(min120_n %>% filter(Time < "2021-01-01"))
+N_120 = nrow(min120_n %>% filter(as.Date(Time) < "2021-01-01"))/n_keys(min120_n %>% filter(as.Date(Time) < "2021-01-01"))
 N_120_all = nrow(min120_n)/n_keys(min120_n)
 
 for (i in seq(N_120,N_120_all-4,4)) {
@@ -662,7 +660,7 @@ saveRDS(residuals, file = "fc120_benchmark_residuals.rds")
 fc160_benchmark <- NULL;
 
 # compute number of entries
-N_160 = nrow(min160_n %>% filter(Time < "2021-01-01"))/n_keys(min160_n %>% filter(Time < "2021-01-01"))
+N_160 = nrow(min160_n %>% filter(as.Date(Time) < "2021-01-01"))/n_keys(min160_n %>% filter(as.Date(Time) < "2021-01-01"))
 N_160_all = nrow(min160_n)/n_keys(min160_n)
 
 for (i in seq(N_160,N_160_all-3,3)) {
@@ -701,7 +699,7 @@ saveRDS(residuals, file = "fc160_benchmark_residuals.rds")
 fc240_benchmark <- NULL;
 
 # compute number of entries
-N_240 = nrow(min240_n %>% filter(Time < "2021-01-01"))/n_keys(min240_n %>% filter(Time < "2021-01-01"))
+N_240 = nrow(min240_n %>% filter(as.Date(Time) < "2021-01-01"))/n_keys(min240_n %>% filter(as.Date(Time) < "2021-01-01"))
 N_240_all = nrow(min240_n)/n_keys(min240_n)
 
 for (i in seq(N_240,N_240_all-2,2)) {
@@ -741,7 +739,7 @@ saveRDS(residuals, file = "fc240_benchmark_residuals.rds")
 fc480_benchmark <- NULL;
 
 # compute number of entries
-N_480 = nrow(min480_n %>% filter(Time < "2021-01-01"))/n_keys(min480_n %>% filter(Time < "2021-01-01"))
+N_480 = nrow(min480_n %>% filter(as.Date(Time) < "2021-01-01"))/n_keys(min480_n %>% filter(as.Date(Time) < "2021-01-01"))
 N_480_all = nrow(min480_n)/n_keys(min480_n)
 
 for (i in seq(N_480,N_480_all-1,1)) {
@@ -774,6 +772,7 @@ saveRDS(fc480_benchmark, "fc480_benchmark.rds")
 saveRDS(fitted, file = "fc480_benchmark_fitted.rds")
 saveRDS(residuals, file = "fc480_benchmark_residuals.rds")
 
+fc480_benchmark_residuals <- readRDS("fc480_benchmark_residuals.rds")
 
 #### Time series linear regression with feature engineering - 10 minutely ####
 min10_n <- min10_power
@@ -922,7 +921,7 @@ saveRDS(min10_n, file = "min10n_features.rds")
 min10_n <- readRDS(file = "min10n_features.rds")
 
 # compute number of entries
-N_10 = nrow(min10_n %>% filter(Time < "2021-01-01"))/n_keys(min10_n %>% filter(Time < "2021-01-01"))
+N_10 = nrow(min10_n %>% filter(as.Date(Time) < "2021-01-01"))/n_keys(min10_n %>% filter(as.Date(Time) < "2021-01-01"))
 N_10_all = nrow(min10_n)/n_keys(min10_n)
 
 
@@ -1068,7 +1067,7 @@ min20_n <- readRDS(file = "min20n_features.rds")
 
 
 # compute number of entries
-N_20 = nrow(min20_n %>% filter(Time < "2021-01-01"))/n_keys(min20_n %>% filter(Time < "2021-01-01"))
+N_20 = nrow(min20_n %>% filter(as.Date(Time) < "2021-01-01"))/n_keys(min20_n %>% filter(as.Date(Time) < "2021-01-01"))
 N_20_all = nrow(min20_n)/n_keys(min20_n)
 
 # initialise objects to save results
@@ -1197,7 +1196,7 @@ saveRDS(min30_n, file = "min30n_features.rds")
 min30_n <- readRDS(file = "min30n_features.rds")
 
 # compute number of entries
-N_30 = nrow(min30_n %>% filter(Time < "2021-01-01"))/n_keys(min30_n %>% filter(Time < "2021-01-01"))
+N_30 = nrow(min30_n %>% filter(as.Date(Time) < "2021-01-01"))/n_keys(min30_n %>% filter(as.Date(Time) < "2021-01-01"))
 N_30_all = nrow(min30_n)/n_keys(min30_n)
 
 # initialise objects to save results
@@ -1205,6 +1204,12 @@ fc_lr_30 <- NULL;
 res_fit_all_30 <- NULL
 
 start_time_30 <- Sys.time()
+
+# Initialize progress bar
+pb <- progress_bar$new(
+  total = length(seq(N_30, N_30_all-16, 16)),
+  format = "[:bar] :percent :elapsedfull"
+)
 # do our TSCV manually, starting from N% of the dataset up to the second last element
 for (i in seq(N_30,N_30_all-16,16)) {
   variables <- setdiff(names(min30_n), c("Power", "Group", "Subgroup", "Time"))
@@ -1230,7 +1235,7 @@ for (i in seq(N_30,N_30_all-16,16)) {
   fitted_m1_30 <- fit_m1 %>% fitted() %>% as_tibble()
   residuals_m1_30 <- fit_m1 %>%  residuals() %>% as_tibble()
   res_fit_all_30 <- bind_rows(res_fit_all_30,bind_cols(fitted_m1_30,res=residuals_m1_30$.resid,iteration=i))
-  
+  pb$tick()
 }
 end_time_30 <- Sys.time()
 
@@ -1250,13 +1255,13 @@ min40_n <- min40_n %>% rename(Time= Time_n)
 # compute features on data set
 min40_n <- min40_n %>% mutate(
   `WMA12` = slider::slide_dbl(Wind_Speed, mean,
-                             .before = 12, .after = -1, .complete = TRUE),
+                              .before = 12, .after = -1, .complete = TRUE),
   `WMSD12` = slider::slide_dbl(Wind_Speed, sd,
-                              .before = 12, .after = -1, .complete = TRUE),
+                               .before = 12, .after = -1, .complete = TRUE),
   `PMA12` = slider::slide_dbl(Power, mean,
-                             .before = 12, .after = -1, .complete = TRUE),
-  `PMSD12` = slider::slide_dbl(Power, sd,
                               .before = 12, .after = -1, .complete = TRUE),
+  `PMSD12` = slider::slide_dbl(Power, sd,
+                               .before = 12, .after = -1, .complete = TRUE),
   `lag_wind1` = lag(Wind_Speed, 1),
   `lag_wind2` = lag(Wind_Speed, 2),
   `lag_wind3` = lag(Wind_Speed, 3),
@@ -1314,17 +1319,23 @@ min40_n <- min40_n %>% mutate(
 saveRDS(min40_n, file = "min40n_features.rds")
 
 # load .rds file
-#min40n <- readRDS(file = "min40n_features.rds")
+#min40_n <- readRDS(file = "min40n_features.rds")
 
 
 # compute number of entries
-N_40 = nrow(min40_n %>% filter(Time < "2021-01-01"))/n_keys(min40_n %>% filter(Time < "2021-01-01"))
+N_40 = nrow(min40_n %>% filter(as.Date(Time) < "2021-01-01"))/n_keys(min40_n %>% filter(as.Date(Time) < "2021-01-01"))
 N_40_all = nrow(min40_n)/n_keys(min40_n)
 
 
 # initialise objects to save results
 fc_lr_40 <- NULL;
 res_fit_all_40 <- NULL
+
+# Initialize progress bar
+pb <- progress_bar$new(
+  total = length(seq(N_40, N_40_all-12, 12)),
+  format = "[:bar] :percent :elapsedfull"
+)
 
 # do our TSCV manually, starting from N% of the dataset up to the second last element
 for (i in seq(N_40,N_40_all-12,12)) {
@@ -1351,7 +1362,7 @@ for (i in seq(N_40,N_40_all-12,12)) {
   fitted_m1_40 <- fit_m1 %>% fitted() %>% as_tibble()
   residuals_m1_40 <- fit_m1 %>%  residuals() %>% as_tibble()
   res_fit_all_40 <- bind_rows(res_fit_all_40,bind_cols(fitted_m1_40,res=residuals_m1_40$.resid,iteration=i))
-  
+  pb$tick()
 }
 
 saveRDS(fitted_m1_40, file = "fc40_m1_lr_fitted.rds")
@@ -1425,11 +1436,11 @@ min60_n <- min60_n %>% mutate(
 saveRDS(min60_n, file = "min60n_features.rds")
 
 # load .rds file
-#min60n <- readRDS(file = "min60n_features.rds")
+min60_n <- readRDS(file = "min60n_features.rds")
 
 
 # compute number of entries
-N_60 = nrow(min60_n %>% filter(Time < "2021-01-01"))/n_keys(min60_n %>% filter(Time < "2021-01-01"))
+N_60 = nrow(min60_n %>% filter(as.Date(Time) < "2021-01-01"))/n_keys(min60_n %>% filter(as.Date(Time) < "2021-01-01"))
 N_60_all = nrow(min60_n)/n_keys(min60_n)
 
 # initialise objects to save results
@@ -1437,6 +1448,12 @@ fc_lr_60 <- NULL;
 res_fit_all_60 <- NULL
 
 start_time_60 <- Sys.time()
+# Initialize progress bar
+pb <- progress_bar$new(
+  total = length(seq(N_60, N_60_all-8, 8)),
+  format = "[:bar] :percent :elapsedfull"
+)
+
 # do our TSCV manually, starting from N% of the dataset up to the second last element
 for (i in seq(N_60,N_60_all-8,8)) {
   variables <- setdiff(names(min60_n), c("Power", "Group", "Subgroup", "Time"))
@@ -1462,7 +1479,7 @@ for (i in seq(N_60,N_60_all-8,8)) {
   fitted_m1_60 <- fit_m1 %>% fitted() %>% as_tibble()
   residuals_m1_60 <- fit_m1 %>%  residuals() %>% as_tibble()
   res_fit_all_60 <- bind_rows(res_fit_all_60,bind_cols(fitted_m1_60,res=residuals_m1_60$.resid,iteration=i))
-  
+  pb$tick()
 }
 
 end_time_60 <- Sys.time()
@@ -1495,14 +1512,14 @@ min80_n <- min80_n %>% mutate(
   `lag_wind4` = lag(Wind_Speed, 4),
   `lag_wind5` = lag(Wind_Speed, 5),
   `lag_wind6` = lag(Wind_Speed, 6),
-
+  
   `lag_power1` = lag(Power, 1),
   `lag_power2` = lag(Power, 2),
   `lag_power3` = lag(Power, 3),
   `lag_power4` = lag(Power, 4),
   `lag_power5` = lag(Power, 5),
   `lag_power6` = lag(Power, 6),
-
+  
   `is_q1` = as.integer(quarter(Time)==1),
   `is_q2` = as.integer(quarter(Time)==2),
   `is_q3` = as.integer(quarter(Time)==3),
@@ -1530,11 +1547,11 @@ min80_n <- min80_n %>% mutate(
 saveRDS(min80_n, file = "min80n_features.rds")
 
 # load .rds file
-#min80n <- readRDS(file = "min80n_features.rds")
+#min80_n <- readRDS(file = "min80n_features.rds")
 
 
 # compute number of entries
-N_80 = nrow(min80_n %>% filter(Time < "2021-01-01"))/n_keys(min80_n %>% filter(Time < "2021-01-01"))
+N_80 = nrow(min80_n %>% filter(as.Date(Time) < "2021-01-01"))/n_keys(min80_n %>% filter(as.Date(Time) < "2021-01-01"))
 N_80_all = nrow(min80_n)/n_keys(min80_n)
 
 # initialise objects to save results
@@ -1595,7 +1612,7 @@ min120_n <- min120_n %>% mutate(
   `lag_wind2` = lag(Wind_Speed, 2),
   `lag_wind3` = lag(Wind_Speed, 3),
   `lag_wind4` = lag(Wind_Speed, 4),
-
+  
   `lag_power1` = lag(Power, 1),
   `lag_power2` = lag(Power, 2),
   `lag_power3` = lag(Power, 3),
@@ -1622,10 +1639,10 @@ min120_n <- min120_n %>% mutate(
 saveRDS(min120_n, file = "min120n_features.rds")
 
 # load .rds file
-#min120n <- readRDS(file = "min120n_features.rds")
+#min120_n <- readRDS(file = "min120n_features.rds")
 
 # compute number of entries
-N_120 = nrow(min120_n %>% filter(Time < "2021-01-01"))/n_keys(min120_n %>% filter(Time < "2021-01-01"))
+N_120 = nrow(min120_n %>% filter(as.Date(Time) < "2021-01-01"))/n_keys(min120_n %>% filter(as.Date(Time) < "2021-01-01"))
 N_120_all = nrow(min120_n)/n_keys(min120_n)
 
 # initialise objects to save results
@@ -1728,7 +1745,7 @@ min160_n <- readRDS(file = "min160n_features.rds")
 
 
 # compute number of entries
-N_160 = nrow(min160_n %>% filter(Time < "2021-01-01"))/n_keys(min160_n%>% filter(Time < "2021-01-01"))
+N_160 = nrow(min160_n %>% filter(as.Date(Time) < "2021-01-01"))/n_keys(min160_n%>% filter(as.Date(Time) < "2021-01-01"))
 N_160_all = nrow(min160_n)/n_keys(min160_n)
 
 # initialise objects to save results
@@ -1767,7 +1784,7 @@ for (i in seq(N_160, N_160_all-3, 3)) {
   fitted_m1_160 <- fit_m1 %>% fitted() %>% as_tibble()
   residuals_m1_160 <- fit_m1 %>%  residuals() %>% as_tibble()
   res_fit_all_160 <- bind_rows(res_fit_all_160,bind_cols(fitted_m1_160,res=residuals_m1_160$.resid,iteration=i))
-
+  
   pb$tick()
 }
 
@@ -1830,7 +1847,7 @@ numThreads <- detectCores()
 cl <- makeCluster(numThreads)
 
 # compute number of entries
-N_240 = nrow(min240_n %>% filter(Time < "2021-01-01"))/n_keys(min240_n %>% filter(Time < "2021-01-01"))
+N_240 = nrow(min240_n %>% filter(as.Date(Time) < "2021-01-01"))/n_keys(min240_n %>% filter(as.Date(Time) < "2021-01-01"))
 N_240_all = nrow(min240_n)/n_keys(min240_n)
 
 fc_lr_240 <- NULL;
@@ -1905,7 +1922,7 @@ saveRDS(min480_n, file = "min480n_features.rds")
 min480_n <- readRDS(file = "min480n_features.rds")
 
 # compute number of entries
-N_480 = nrow(min480_n  %>% filter(Time < "2021-01-01"))/n_keys(min480_n %>% filter(Time < "2021-01-01"))
+N_480 = nrow(min480_n  %>% filter(as.Date(Time) < "2021-01-01"))/n_keys(min480_n %>% filter(as.Date(Time) < "2021-01-01"))
 N_480_all = nrow(min480_n)/n_keys(min480_n)
 
 fc_lr_480 <- NULL;
@@ -1939,7 +1956,7 @@ for (i in seq(N_480,N_480_all-1,1)) {
   fitted_m1_480 <- fit_m1 %>% fitted() %>% as_tibble()
   residuals_m1_480 <- fit_m1 %>%  residuals() %>% as_tibble()
   res_fit_all_480 <- bind_rows(res_fit_all_480,bind_cols(fitted_m1_480,res=residuals_m1_480$.resid,iteration=i))
-
+  
 }
 
 saveRDS(fitted_m1_480, file = "fc480_m1_lr_fitted.rds")
