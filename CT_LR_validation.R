@@ -439,32 +439,43 @@ N_10_all = nrow(min10_n %>% filter(as.Date(Time) < "2021-01-01"))/n_keys(min10_n
 
 # initialise objects to save results
 fc_lr_m2_10 <- NULL;
-res_fit_all_m2_10 <- NULL
+res_fit_all_m2_10 <- new_data_all_10 <- NULL
 
 start_time_10 <- Sys.time()
 pb <- progress_bar$new(
   total = length(seq(N_10, N_10_all, 48)),
   format = "[:bar] :percent :elapsedfull"
 )
+gc()
 # do our TSCV manually, starting from N% of the dataset up to the second last element
 for (i in seq(N_10,N_10_all,48)) {
   # compute fit
   variables <- setdiff(names(min10_n), c("Power", "Group", "Subgroup", "Time"))
   formula <- as.formula(paste("Power ~", paste(variables, collapse = " + ")))
   
+  gc()
   fit_m2 <- min10_n %>%
     group_by(Group, Subgroup) %>%
     slice_head(n = i) %>%
-    model(mod1 = TSLM(formula))
+    fabletools::model(mod1 = TSLM(formula))
+  
+  new_data <- NULL
+  # h=48 steps ahead for 8 hours forecasts
+  for (h in 1: 48) {
+    new_data= bind_rows(new_data, 
+                        bind_cols(min10_n %>%  group_by(Group, Subgroup) %>% dplyr::slice(i+1+(h-1)) %>% select(Power, contains("is")), 
+                                  min10_n %>%  group_by(Group, Subgroup) %>% dplyr::slice(i+1) %>% as_tibble() %>%
+                                    select(-Power, -Time, -Group, -Subgroup, -contains("is"))) %>% select(Group,  Subgroup, Time,Power, everything()) 
+    )
+  }
+  new_data_all_10 <- bind_rows(new_data_all_10, new_data)
   
   # forecast with new data
   fc <-   fit_m2 %>%
-    forecast(new_data = min10_n %>%
-               group_by(Group, Subgroup) %>%
-               dplyr::slice((i+1):(i+48))) %>%
+    forecast(new_data  %>% select(-Power)) %>%
     as_tibble() %>% bind_cols(Actual= min10_n %>%
                                 group_by(Group, Subgroup) %>%
-                                dplyr::slice((i+1):(i+48)) %>% pull(Power))
+                                dplyr::slice((i+1): (i+48)) %>% pull(Power))
   fc= cbind(fc, iteration=i)
   fc_lr_m2_10 <- bind_rows(fc_lr_m2_10,fc)
   
@@ -472,8 +483,8 @@ for (i in seq(N_10,N_10_all,48)) {
   fitted_m2_10 <- fit_m2 %>% fitted() %>% as_tibble()
   residuals_m2_10 <- fit_m2 %>%  residuals() %>% as_tibble()
   res_fit_all_m2_10 <- bind_rows(res_fit_all_m2_10,bind_cols(fitted_m2_10,res=residuals_m2_10$.resid,iteration=i))
-  pb$tick()
-}
+pb$tick()
+  }
 
 end_time_10 <- Sys.time()
 
@@ -500,6 +511,7 @@ N_20_all = nrow(min20_n%>% filter(as.Date(Time) < "2021-01-01"))/n_keys(min20_n%
 # initialise objects to save results
 fc_lr_m2_20 <- NULL;
 res_fit_all_m2_20 <- NULL
+new_data_all_20 <- NULL
 
 # Start timing
 start_time_20 <- Sys.time()
@@ -516,13 +528,23 @@ for (i in seq(N_20,N_20_all,24)) {
   fit_m2 <- min20_n %>%
     group_by(Group, Subgroup) %>%
     slice_head(n = i) %>%
-    model(mod1 = TSLM(formula))
+    fabletools::model(mod1 = TSLM(formula))
+  
+  # forecast with new data
+  new_data <- NULL
+  # h=24 steps ahead for 8 hours forecasts
+  for (h in 1: 24) {
+    new_data= bind_rows(new_data, 
+                        bind_cols(min20_n %>%  group_by(Group, Subgroup) %>% dplyr::slice(i+1+(h-1)) %>% select(Power, contains("is")), 
+                                  min20_n %>%  group_by(Group, Subgroup) %>% dplyr::slice(i+1) %>% as_tibble() %>%
+                                    select(-Power, -Time, -Group, -Subgroup, -contains("is"))) %>% select(Group,  Subgroup, Time,Power, everything()) 
+    )
+  }
+  new_data_all_20 <- bind_rows(new_data_all_20, new_data)
   
   # forecast with new data
   fc <-   fit_m2 %>%
-    forecast(new_data = min20_n %>%
-               group_by(Group, Subgroup) %>%
-               dplyr::slice((i+1): (i+24))) %>%
+    forecast(new_data %>% select(-Power)) %>%
     as_tibble() %>% bind_cols(Actual= min20_n %>%
                                 group_by(Group, Subgroup) %>%
                                 dplyr::slice((i+1): (i+24)) %>% pull(Power))
@@ -557,6 +579,7 @@ N_30_all = nrow(min30_n%>% filter(as.Date(Time) < "2021-01-01"))/n_keys(min30_n%
 # initialise objects to save results
 fc_lr_m2_30 <- NULL;
 res_fit_all_m2_30 <- NULL
+new_data_all_30 <- NULL
 
 start_time_30 <- Sys.time()
 # Initialize progress bar
@@ -573,13 +596,23 @@ for (i in seq(N_30,N_30_all,16)) {
   fit_m2 <- min30_n %>%
     group_by(Group, Subgroup) %>%
     slice_head(n = i) %>%
-    model(mod1 = TSLM(formula))
+    fabletools::model(mod1 = TSLM(formula))
+  
+  # forecast with new data
+  new_data <- NULL
+  # h=16 steps ahead for 8 hours forecasts
+  for (h in 1: 16) {
+    new_data= bind_rows(new_data, 
+                        bind_cols(min30_n %>%  group_by(Group, Subgroup) %>% dplyr::slice(i+1+(h-1)) %>% select(Power, contains("is")), 
+                                  min30_n %>%  group_by(Group, Subgroup) %>% dplyr::slice(i+1) %>% as_tibble() %>%
+                                    select(-Power, -Time, -Group, -Subgroup, -contains("is"))) %>% select(Group,  Subgroup, Time,Power, everything()) 
+    )
+  }
+  new_data_all_30 <- bind_rows(new_data_all_30, new_data)
   
   # forecast with new data
   fc <-   fit_m2 %>%
-    forecast(new_data = min30_n %>%
-               group_by(Group, Subgroup) %>%
-               dplyr::slice((i+1): (i+16))) %>%
+    forecast(new_data %>% select(-Power)) %>%
     as_tibble() %>% bind_cols(Actual= min30_n %>%
                                 group_by(Group, Subgroup) %>%
                                 dplyr::slice((i+1): (i+16) ) %>% pull(Power))
@@ -617,7 +650,7 @@ N_40_all = nrow(min40_n%>% filter(as.Date(Time) < "2021-01-01"))/n_keys(min40_n%
 # initialise objects to save results
 fc_lr_m2_40 <- NULL;
 res_fit_all_m2_40 <- NULL
-
+new_data_all_40 <- NULL
 # do our TSCV manually, starting from N% of the dataset up to the second last element
 for (i in seq(N_40,N_40_all,12)) {
   variables <- setdiff(names(min40_n), c("Power", "Group", "Subgroup", "Time"))
@@ -626,13 +659,23 @@ for (i in seq(N_40,N_40_all,12)) {
   fit_m2 <- min40_n %>%
     group_by(Group, Subgroup) %>%
     slice_head(n = i) %>%
-    model(mod1 = TSLM(formula))
+    fabletools::model(mod1 = TSLM(formula))
+  
+  # forecast with new data
+  new_data <- NULL
+  # h=12 steps ahead for 8 hours forecasts
+  for (h in 1: 12) {
+    new_data= bind_rows(new_data, 
+                        bind_cols(min40_n %>%  group_by(Group, Subgroup) %>% dplyr::slice(i+1+(h-1)) %>% select(Power, contains("is")), 
+                                  min40_n %>%  group_by(Group, Subgroup) %>% dplyr::slice(i+1) %>% as_tibble() %>%
+                                    select(-Power, -Time, -Group, -Subgroup, -contains("is"))) %>% select(Group,  Subgroup, Time,Power, everything()) 
+    )
+  }
+  new_data_all_40 <- bind_rows(new_data_all_40, new_data)
   
   # forecast with new data
   fc <-   fit_m2 %>%
-    forecast(new_data = min40_n %>%
-               group_by(Group, Subgroup) %>%
-               dplyr::slice((i+1) : (i+12))) %>%
+    forecast(new_data %>% select(-Power)) %>%
     as_tibble() %>% bind_cols(Actual= min40_n %>%
                                 group_by(Group, Subgroup) %>%
                                 dplyr::slice((i+1): (i+12)) %>% pull(Power))
@@ -667,6 +710,7 @@ N_60_all = nrow(min60_n%>% filter(as.Date(Time) < "2021-01-01"))/n_keys(min60_n%
 # initialise objects to save results
 fc_lr_m2_60 <- NULL;
 res_fit_all_m2_60 <- NULL
+new_data_all_60 <- NULL
 
 start_time_60 <- Sys.time()
 # do our TSCV manually, starting from N% of the dataset up to the second last element
@@ -677,17 +721,28 @@ for (i in seq(N_60,N_60_all,8)) {
   fit_m2 <- min60_n %>%
     group_by(Group, Subgroup) %>%
     slice_head(n = i) %>%
-    model(mod1 = TSLM(formula))
+    fabletools::model(mod1 = TSLM(formula))
+  
+  # forecast with new data
+  new_data <- NULL
+  # h=8 steps ahead for 8 hours forecasts
+  for (h in 1: 8) {
+    new_data= bind_rows(new_data, 
+                        bind_cols(min60_n %>%  group_by(Group, Subgroup) %>% dplyr::slice(i+1+(h-1)) %>% select(Power, contains("is")), 
+                                  min60_n %>%  group_by(Group, Subgroup) %>% dplyr::slice(i+1) %>% as_tibble() %>%
+                                    select(-Power, -Time, -Group, -Subgroup, -contains("is"))) %>% select(Group,  Subgroup, Time,Power, everything()) 
+    )
+  }
+  new_data_all_60 <- bind_rows(new_data_all_60, new_data)
   
   # forecast with new data
   fc <-   fit_m2 %>%
-    forecast(new_data = min60_n %>%
-               group_by(Group, Subgroup) %>%
-               dplyr::slice((i+1): (i+8))) %>%
+    forecast(new_data %>% select(-Power)) %>%
     as_tibble() %>% bind_cols(Actual= min60_n %>%
                                 group_by(Group, Subgroup) %>%
                                 dplyr::slice((i+1) : (i+8)) %>% pull(Power))
   fc= cbind(fc, iteration=i)
+  
   fc_lr_m2_60 <- bind_rows(fc_lr_m2_60,fc)
   
   # extract fitted and residuals
@@ -699,8 +754,8 @@ for (i in seq(N_60,N_60_all,8)) {
 
 end_time_60 <- Sys.time()
 
-saveRDS(fitted_m2_60, file = "fc60_m2_lr_fitted.rds")
-saveRDS(residuals_m2_60, file = "fc60_m2_lr_residuals.rds")
+#saveRDS(fitted_m2_60, file = "fc60_m2_lr_fitted.rds")
+#saveRDS(residuals_m2_60, file = "fc60_m2_lr_residuals.rds")
 
 saveRDS(res_fit_all_m2_60, "res_fit_all_m2_60.rds")
 saveRDS(fc_lr_m2_60, "fc_lr_m2_60.rds")
@@ -719,7 +774,7 @@ N_80_all = nrow(min80_n%>% filter(as.Date(Time) < "2021-01-01"))/n_keys(min80_n%
 # initialise objects to save results
 fc_lr_m2_80 <- NULL;
 res_fit_all_m2_80 <- NULL
-
+new_data_all_80 <- NULL
 # do our TSCV manually, starting from N% of the dataset up to the second last element
 for (i in seq(N_80,N_80_all,6)) {
   variables <- setdiff(names(min80_n), c("Power", "Group", "Subgroup", "Time"))
@@ -728,13 +783,23 @@ for (i in seq(N_80,N_80_all,6)) {
   fit_m2 <- min80_n %>%
     group_by(Group, Subgroup) %>%
     slice_head(n = i) %>%
-    model(mod1 = TSLM(formula))
+    fabletools::model(mod1 = TSLM(formula))
+  
+  # forecast with new data
+  new_data <- NULL
+  # h=4 steps ahead for 8 hours forecasts
+  for (h in 1: 6) {
+    new_data= bind_rows(new_data, 
+                        bind_cols(min80_n %>%  group_by(Group, Subgroup) %>% dplyr::slice(i+1+(h-1)) %>% select(Power, contains("is")), 
+                                  min80_n %>%  group_by(Group, Subgroup) %>% dplyr::slice(i+1) %>% as_tibble() %>%
+                                    select(-Power, -Time, -Group, -Subgroup, -contains("is"))) %>% select(Group,  Subgroup, Time,Power, everything()) 
+    )
+  }
+  new_data_all_80 <- bind_rows(new_data_all_80, new_data)
   
   # forecast with new data
   fc <-   fit_m2 %>%
-    forecast(new_data = min80_n %>%
-               group_by(Group, Subgroup) %>%
-               dplyr::slice((i+1):(i+6))) %>%
+    forecast(new_data  %>% select(-Power)) %>%
     as_tibble() %>% bind_cols(Actual= min80_n %>%
                                 group_by(Group, Subgroup) %>%
                                 dplyr::slice((i+1): (i+6)) %>% pull(Power))
@@ -768,6 +833,7 @@ N_120_all = nrow(min120_n%>% filter(as.Date(Time) < "2021-01-01"))/n_keys(min120
 # initialise objects to save results
 fc_lr_m2_120 <- NULL;
 res_fit_all_m2_120 <- NULL
+new_data_all_120 <- NULL
 
 start_time_120 <- Sys.time()
 
@@ -779,16 +845,26 @@ for (i in seq(N_120, N_120_all, 4)) {
   fit_m2 <- min120_n %>%
     group_by(Group, Subgroup) %>%
     slice_head(n = i) %>%
-    model(mod1 = TSLM(formula))
+    fabletools::model(mod1 = TSLM(formula))
+  
+  # forecast with new data
+  new_data <- NULL
+  # h=4 steps ahead for 8 hours forecasts
+  for (h in 1: 4) {
+    new_data= bind_rows(new_data, 
+                        bind_cols(min120_n %>%  group_by(Group, Subgroup) %>% dplyr::slice(i+1+(h-1)) %>% select(Power, contains("is")), 
+                                  min120_n %>%  group_by(Group, Subgroup) %>% dplyr::slice(i+1) %>% as_tibble() %>%
+                                    select(-Power, -Time, -Group, -Subgroup, -contains("is"))) %>% select(Group,  Subgroup, Time,Power, everything()) 
+    )
+  }
+  new_data_all_120 <- bind_rows(new_data_all_120, new_data)
   
   # forecast with new data
   fc <-   fit_m2 %>%
-    forecast(new_data = min120_n %>%
-               group_by(Group, Subgroup) %>%
-               dplyr::slice((i+1):(i+4))) %>%
+    forecast(new_data %>% select(-Power)) %>%
     as_tibble() %>% bind_cols(Actual= min120_n %>%
                                 group_by(Group, Subgroup) %>%
-                                dplyr::slice((i+1): (i+4)) %>% pull(Power))
+                                dplyr::slice(i+1, i+2, i+3, i+4) %>% pull(Power))
   fc= cbind(fc, iteration=i)
   fc_lr_m2_120 <- bind_rows(fc_lr_m2_120,fc)
   
@@ -823,7 +899,7 @@ N_160_all = nrow(min160_n%>% filter(as.Date(Time) < "2021-01-01"))/n_keys(min160
 # initialise objects to save results
 fc_lr_m2_160 <- NULL;
 res_fit_all_m2_160 <- NULL
-
+new_data_all_160 <- NULL
 # Initialize progress bar
 pb <- progress_bar$new(
   total = length(seq(N_160, N_160_all-3, 3)),
@@ -839,13 +915,23 @@ for (i in seq(N_160, N_160_all, 3)) {
   fit_m2 <- min160_n %>%
     group_by(Group, Subgroup) %>%
     slice_head(n = i) %>%
-    model(mod1 = TSLM(formula))
+    fabletools::model(mod1 = TSLM(formula))
+  
+  # forecast with new data
+  new_data <- NULL
+  # h=3 steps ahead for 8 hours forecasts
+  for (h in 1: 3) {
+    new_data= bind_rows(new_data, 
+                        bind_cols(min160_n %>%  group_by(Group, Subgroup) %>% dplyr::slice(i+1+(h-1)) %>% select(Power, contains("is")), 
+                                  min160_n %>%  group_by(Group, Subgroup) %>% dplyr::slice(i+1) %>% as_tibble() %>%
+                                    select(-Power, -Time, -Group, -Subgroup, -contains("is"))) %>% select(Group,  Subgroup, Time,Power, everything()) 
+    )
+  }
+  new_data_all_160 <- bind_rows(new_data_all_160, new_data)
   
   # forecast with new data
   fc <-   fit_m2 %>%
-    forecast(new_data = min160_n %>%
-               group_by(Group, Subgroup) %>%
-               dplyr::slice((i+1): (i+3))) %>%
+    forecast(new_data %>% select(-Power)) %>%
     as_tibble() %>% bind_cols(Actual= min160_n %>%
                                 group_by(Group, Subgroup) %>%
                                 dplyr::slice((i+1): (i+3)) %>% pull(Power))
@@ -883,6 +969,7 @@ N_240_all = nrow(min240_n%>% filter(as.Date(Time) < "2021-01-01"))/n_keys(min240
 
 fc_lr_m2_240 <- NULL;
 res_fit_all_m2_240 <- NULL
+new_data_all_240 <- NULL
 
 # do our TSCV manually, starting from N% of the dataset up to the second last element
 for (i in seq(N_240,N_240_all,2)) {
@@ -890,15 +977,28 @@ for (i in seq(N_240,N_240_all,2)) {
   formula <- as.formula(paste("Power ~", paste(variables, collapse = " + ")))
   # compute fit
   fit_m2 <- min240_n %>%
-    group_by(Group, Subgroup) %>%
-    slice_head(n = i) %>%
-    model(mod1 = TSLM(formula))
+    dplyr::group_by(Group, Subgroup) %>%
+    dplyr::slice_head(n = i) %>%
+    fabletools::model(mod1 = TSLM(formula))
+  
+  # forecast with new data
+  new_data <- NULL
+  # h=2 steps ahead for 8 hours forecasts
+  for (h in 1: 2) {
+    new_data= bind_rows(new_data, 
+                        bind_cols(min240_n %>%  group_by(Group, Subgroup) %>% dplyr::slice(i+1+(h-1)) %>% select(Power, contains("is")), 
+                                  min240_n %>%  group_by(Group, Subgroup) %>% dplyr::slice(i+1) %>% as_tibble() %>%
+                                    select(-Power, -Time, -Group, -Subgroup, -contains("is"))) %>% select(Group,  Subgroup, Time,Power, everything()) 
+    )
+  }
+  new_data_all_240 <- bind_rows(new_data_all_240, new_data)
   
   # forecast with new data
   fc <-   fit_m2 %>%
-    forecast(new_data = min240_n %>%
-               group_by(Group, Subgroup) %>%
-               dplyr::slice(i+1, i+2)) %>%
+    forecast(new_data %>% select(-Power)) %>%
+    #= min240_n %>%
+    #   group_by(Group, Subgroup) %>%
+    #   dplyr::slice(i+1, i+2)) %>%
     as_tibble() %>% bind_cols(Actual= min240_n %>%
                                 group_by(Group, Subgroup) %>%
                                 dplyr::slice(i+1, i+2) %>% pull(Power))
@@ -940,7 +1040,7 @@ for (i in seq(N_480,N_480_all-1,1)) {
   fit_m2 <- min480_n %>%
     group_by(Group, Subgroup) %>%
     slice_head(n = i) %>%
-    model(mod1 = TSLM(formula))
+    fabletools::model(mod1 = TSLM(formula))
   
   # forecast with new data
   fc <-   fit_m2 %>%
