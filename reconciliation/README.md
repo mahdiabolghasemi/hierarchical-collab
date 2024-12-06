@@ -31,12 +31,12 @@ To calculate scores (accuracy and costs):
 
 1. Run the following command to compute the forecasts accuracy scores:
    ```bash
-   Rscript scores.R
+   Rscript ./R/scores.R
    ```
 
 2. Run the following command to compute the decision costs:
    ```bash
-   Rscript index.R
+   Rscript ./R/index.R
    ```
 
 ## Tables and Plots
@@ -62,7 +62,7 @@ To generate tables and plots for analysis:
    Rscript ./R/tables_cost.R
    ```
 
-## Repository Structure
+## Folder Structure
 Here is an overview of the folder structure:
 
 ```
@@ -75,9 +75,9 @@ Here is an overview of the folder structure:
 │       └── Validation-error-lgbm
 ├── bash_export.sh
 ├── bash_reco.sh
-├── export_is.R
-├── export_vl.R
 └── R
+    ├── export_is.R
+    ├── export_vl.R
     ├── reconciliation.R
     ├── scores.R
     ├── index.R
@@ -87,7 +87,7 @@ Here is an overview of the folder structure:
     └── tables_cost.R
 ```
 
-## Notes
-- Ensure that all required dependencies are installed before running the scripts.
-- Verify that the folder paths match the described structure.
+> [!IMPORTANT]  
+> - Ensure that all required dependencies are installed before running the scripts.
+> - Verify that the folder paths match the described structure.
 
